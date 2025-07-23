@@ -2,92 +2,138 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ranked Poker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(to bottom, #121212, #000);
-      color: #fff;
-      text-align: center;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+      color: #f8f8f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .table {
+      width: 900px;
+      height: 600px;
+      background: radial-gradient(circle at center, #044, #011);
+      border: 4px solid #0ff;
+      border-radius: 20px;
+      position: relative;
       padding: 20px;
+      box-shadow: 0 0 20px #0ff4;
     }
-    h1 {
-      color: #f7931a;
+
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
     }
-    #game {
-      margin-top: 40px;
-    }
+
     .card {
-      display: inline-block;
-      padding: 15px 25px;
-      margin: 10px;
-      border: 2px solid #29b6f6;
-      border-radius: 10px;
-      background: #1e1e1e;
-      font-size: 24px;
+      width: 60px;
+      height: 90px;
+      background: white;
+      color: black;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      box-shadow: 0 0 5px #000;
     }
-    button {
-      padding: 12px 24px;
-      margin: 10px;
-      background: #f7931a;
+
+    .community-cards {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 30px 0;
+    }
+
+    .player-area, .opponent-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: absolute;
+      width: 100%;
+    }
+
+    .player-area {
+      bottom: 30px;
+    }
+
+    .opponent-area {
+      top: 30px;
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 20px;
       border: none;
       border-radius: 8px;
-      color: white;
-      font-size: 16px;
+      background: #0ff;
+      color: #000;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
     }
-    button:hover {
-      background: #ffa940;
+
+    .btn:hover {
+      background: #0cc;
     }
-    #balance {
-      margin-top: 10px;
-      font-size: 18px;
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
     }
-    #status {
-      margin-top: 20px;
-      font-size: 20px;
-      color: #29b6f6;
+
+    .balance {
+      margin-top: 5px;
+      font-size: 0.9rem;
+      color: #0ff;
     }
   </style>
 </head>
 <body>
-  <h1>Ranked Poker</h1>
-  <p>1v1 ELO Duels – Climb the Leaderboard</p>
-  <div id="balance">Fake Crypto: 1000 sats</div>
-  <div id="game">
-    <div id="hand"></div>
-    <div id="actions"></div>
-    <div id="status"></div>
+  <div class="table">
+    <div class="opponent-area">
+      <h2>Opponent</h2>
+      <div class="cards">
+        <div class="card">🂠</div>
+        <div class="card">🂠</div>
+      </div>
+      <div class="balance">Balance: 100</div>
+    </div>
+
+    <div class="community-cards">
+      <div class="card">🂠</div>
+      <div class="card">🂠</div>
+      <div class="card">🂠</div>
+      <div class="card">🂠</div>
+      <div class="card">🂠</div>
+    </div>
+
+    <div class="player-area">
+      <h2>You</h2>
+      <div class="cards">
+        <div class="card">🂠</div>
+        <div class="card">🂠</div>
+      </div>
+      <div class="balance">Balance: 100</div>
+      <div class="actions">
+        <button class="btn">Fold</button>
+        <button class="btn">Call</button>
+        <button class="btn">Raise</button>
+      </div>
+    </div>
   </div>
-
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
-    let balance = 1000;
-    document.getElementById('balance').innerText = `Fake Crypto: ${balance} sats`;
-
-    socket.on('deal', ({ hand }) => {
-      document.getElementById('hand').innerHTML = hand.map(card => `<span class='card'>${card}</span>`).join('');
-      document.getElementById('actions').innerHTML = `
-        <button onclick="play('fold')">Fold</button>
-        <button onclick="play('call')">Call (20 sats)</button>
-        <button onclick="play('raise')">Raise (50 sats)</button>`;
-    });
-
-    socket.on('result', ({ winner, newBalance }) => {
-      const msg = winner === socket.id ? '🎉 You Win the Hand!' : '😵 You Lost This One';
-      document.getElementById('status').innerText = msg;
-      balance = newBalance;
-      document.getElementById('balance').innerText = `Fake Crypto: ${balance} sats`;
-    });
-
-    function play(action) {
-      socket.emit('play', { action });
-      document.getElementById('status').innerText = `You chose to ${action}`;
-    }
-  </script>
 </body>
 </html>
